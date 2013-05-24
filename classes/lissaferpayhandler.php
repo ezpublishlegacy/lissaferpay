@@ -1,32 +1,9 @@
 <?php 
-
-// Definition of eZCurlGateway class
-//
-// An abstract class for implementing transparent credit card
-// payment in eZ publish using cURL.
-//
-//
-// SOFTWARE NAME: paymentpage extension for eZ Publish
-// SOFTWARE RELEASE: 1.1.0
-// COPYRIGHT NOTICE: Copyright (C) 1999-2010 eZ Systems AS
-// SOFTWARE LICENSE: GNU General Public License v2.0
-// NOTICE: >
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of version 2.0 of the GNU General
-// Public License as published by the Free Software Foundation.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of version 2.0 of the GNU General
-// Public License along with this program; if not, write to the Free
-// Software Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston,
-// MA 02110-1301, USA.
-
-
-class paymentpageHandler
+/*
+ * @copyright Copyright (C) 2010-2013 land in sicht AG All rights reserved.
+ * @license http://www.gnu.org/licenses/gpl-2.0.txt GNU General Public License v2
+*/
+class lissaferpayHandler
 {
 	var $request;
     var $response;
@@ -36,34 +13,35 @@ class paymentpageHandler
 
   
 	
-	public function paymentpageHandler()
+	public function lissaferpayHandler()
 	{
 		$this->error = false;
 	
 		$ini = eZINI::instance( 'lissaferpay.ini' );
-		$this->mode = $ini->variable('paymentpage','Mode');
-		$this->use3D = $ini->variable('paymentpage','use3D');
+		$this->mode = $ini->variable('lissaferpay','Mode');
+		$this->use3D = $ini->variable('lissaferpay','use3D');
 		
-		$paymentPageSettings = 'PaymentPageSettings_'.$this->mode;
-		$this->saferpayUsername = $ini->variable($paymentPageSettings,'UserName');
-        $this->saferpayPassword = $ini->variable($paymentPageSettings,'password');
-        $this->saferpayAccountID = $ini->variable($paymentPageSettings,'accountID');
-        $this->saferpayCurrency = $ini->variable($paymentPageSettings,'currency');
-        $this->saferpayExecuteUrl = $ini->variable($paymentPageSettings,'executeURL'); 
-        $this->saferpayComleteUrl = $ini->variable($paymentPageSettings,'payComleteURL'); 
-        $this->verifyUrl = $ini->variable($paymentPageSettings,'verifyURL'); 
+		$saferpaySettings = 'lisSaferpaySettings_'.$this->mode;
+		$this->saferpayUsername = $ini->variable($saferpaySettings,'UserName');
+        $this->saferpayPassword = $ini->variable($saferpaySettings,'password');
+        $this->saferpayAccountID = $ini->variable($saferpaySettings,'accountID');
+        $this->saferpayCurrency = $ini->variable($saferpaySettings,'currency');
+        $this->saferpayExecuteUrl = $ini->variable($saferpaySettings,'executeURL'); 
+        $this->saferpayComleteUrl = $ini->variable($saferpaySettings,'payComleteURL'); 
+        $this->verifyUrl = $ini->variable($saferpaySettings,'verifyURL'); 
 
-        $this->logger = eZPaymentLogger::CreateForAdd( "var/log/SaferpayPayment.log" );
+        $this->logger = eZPaymentLogger::CreateForAdd( "var/log/lisSaferpayPayment.log" );
 	}
 	
 	
  public function send($type, $order_total_amount, $threeD_sessionID)
     {
         	
-    		$saferpay = new saferpayHandler();
-    	
+    		$saferpay = new lissaferpayHandler();
+    		$ini = eZINI::instance( 'lissaferpay.ini' );
+    
             $this->logger->writeTimedString($type ,"do send type");
-    	 	
+    	 	//echo "SEND-FUNKTION..EXECUTE<br>";
     	 	$url_exe = $this->saferpayExecuteUrl; // aus INI
     	 	
     	 	//attribute aus ini bzw. Warencorb mitgeben
@@ -74,17 +52,17 @@ class paymentpageHandler
     	 	
     	 	if($this->use3D=='1')
     	 	{
-	    	 	 $pan= $_SESSION['saferpay']['CardNumber'];
-	    	 	 $cvc = $_SESSION['saferpay']['SecurityNumber'];
-	    	 	 $month = $_SESSION['saferpay']['ExpirationMonth'];
-	    	 	 $year = $_SESSION['saferpay']['ExpirationYear'];
+	    	 	 $pan= $_SESSION['lissaferpay']['CardNumber'];
+	    	 	 $cvc = $_SESSION['lissaferpay']['SecurityNumber'];
+	    	 	 $month = $_SESSION['lissaferpay']['ExpirationMonth'];
+	    	 	 $year = $_SESSION['lissaferpay']['ExpirationYear'];
     	 	}
     	 	else
     	 	{
-	    	 	 $pan = $_REQUEST["CardNumber"];			//Form
-	    	 	 $cvc = $_REQUEST["SecurityNumber"];		//Form
-	    	 	 $month = $_REQUEST["ExpirationMonth"];		//Form
-	    	 	 $year = substr($_REQUEST["ExpirationYear"],-2); //Form
+	    	 	 $pan = $_REQUEST["CardNumber"];			//aus Form
+	    	 	 $cvc = $_REQUEST["SecurityNumber"];		//aus Form
+	    	 	 $month = $_REQUEST["ExpirationMonth"];		//aus Form
+	    	 	 $year = substr($_REQUEST["ExpirationYear"],-2); //aus Form
     	 	}
     	 	
     	 	$pan = str_replace(' ','',$pan);
@@ -114,7 +92,7 @@ class paymentpageHandler
 
    			# Fix for curl version > 7.1 with require CA cert by default.
             # For better security implement a cacert bundle
-			$file = eZExtension::baseDirectory() . '/lispaymentpage/ca/cacert.pem';
+            $file = eZExtension::baseDirectory() . '/lissaferpay/ca/cacert.pem';
             if ( $this->mode != "demo" and file_exists( $file ) )
             {
                 curl_setopt ($ch, CURLOPT_CAINFO, $file );
@@ -144,28 +122,26 @@ class paymentpageHandler
     		
     		$this->logger->writeTimedString($result_response,"RESULT first send");
     		
-    		if($result_response == 0 && substr($res,0,3)=="OK:" ) // && substr($pan_response,-4) == substr($pan,-4) ) // Antwort vom 1. send ist in Ordnung
+    		if($result_response == 0 && substr($res,0,3)=="OK:" ) // Antwort vom 1. send ist in Ordnung
     		{
 	
-	    	
+	    	 	//echo "SEND-FUNKTION..CONFIRM <br>";
 	    	 	$url_conf = $this->saferpayComleteUrl;
 	    	 	//$response mit einbauen
 	    	 	$id=(string)$xmlObject['ID'];   //aus result 1. send
 	    	 	
-	    	
-	    	    //$providername = (string)$xmlObject['PROVIDERNAME'];
+
 	    	 	
 	    	 	$attributes = "?spPassword=" . $pswd;
 	    	 	$attributes .= "&ACCOUNTID=" . $accountid;
 	    	 	$attributes .= "&ID=" . $id;
-	    	 //	$attributes .= "&PROVIDERNAME=" . $providername;
-	    	 	
-	    	 	/*
+	     	
+	    	 	//die nächsten 3 zeilen waren auskommentiert
 	    		if($type=="payEnrolled")
 	            {
 	                $attributes .= "&MPI_SESSIONID=" . $threeD_sessionID;
 	            }
-	    	 	*/
+	    	 	
 	    	 	
 	    	 	$url = $url_conf.$attributes;
 	    		
@@ -175,6 +151,8 @@ class paymentpageHandler
     			curl_setopt( $ch, CURLOPT_RETURNTRANSFER, 1 );
             	$res = curl_exec($cc);
             	
+//            	$info1 = curl_getinfo($cc);
+
             	$this->logger->writeTimedString($res,"RESULT second send");
             	
     			if($res == "OK")
@@ -202,7 +180,6 @@ class paymentpageHandler
     		else //Ergebnis vom 1. send ist NICHT in ordnung
     		{
     			
-    			
     				$error = "ERROR_".$result_response;
     				return $error;
     			
@@ -213,7 +190,7 @@ class paymentpageHandler
     
   public static function unsetSessionParams()
     {
-        unset($_SESSION['paymentpage']);
+        unset($_SESSION['lissaferpay']);
     }
     
     

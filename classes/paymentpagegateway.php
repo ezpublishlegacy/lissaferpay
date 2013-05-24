@@ -37,7 +37,7 @@ class PaymentPageGateway extends eZCurlGateway
 	function PaymentPageGateway()
 	{
 		$this->logger = eZPaymentLogger::CreateForAdd( "var/log/eZPaymentGatewayType.log" );
-		$ini = eZINI::instance( 'paymentpage.ini' );
+		$ini = eZINI::instance( 'lissaferpay.ini' );
 		$this->mode = $ini->variable('paymentpage','Mode');
 		$paymentpageSettings = 'PaymentPageSettings_'.$this->mode;
 		
@@ -67,7 +67,7 @@ class PaymentPageGateway extends eZCurlGateway
 		$processParams = $process->attribute( 'parameter_list' );
 
 		// load ini
-		$ini = eZINI::instance( 'paymentpage.ini' );
+		$ini = eZINI::instance( 'lissaferpay.ini' );
 		
 		//create link
 		//1. create PAYINIT		
@@ -88,7 +88,7 @@ class PaymentPageGateway extends eZCurlGateway
 	function createPayinit( $process )
 	{
 		
-		$ini = eZINI::instance( 'paymentpage.ini' );
+		$ini = eZINI::instance( 'lissaferpay.ini' );
 			
 		// load http
 		$http = eZHTTPTool::instance();

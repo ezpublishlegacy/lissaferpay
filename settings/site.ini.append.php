@@ -1,8 +1,6 @@
 <?php
 /*
-
 [RegionalSettings]
-TranslationExtensions[]=paymentpage
-
+TranslationExtensions[]=lissaferpay
  */
 ?>

@@ -2,6 +2,5 @@
 
 # eZ publish configuration file for designs
 [ExtensionSettings]
-DesignExtensions[]=paymentpage
-
+DesignExtensions[]=lissaferpay
 */ ?>

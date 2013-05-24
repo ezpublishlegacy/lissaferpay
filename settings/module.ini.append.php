@@ -1,5 +1,6 @@
 <?php /* #?ini charset="iso-8859-1"?
 [ModuleSettings]
-ExtensionRepositories[]=paymentpage
+ExtensionRepositories[]=lissaferpay
 ModuleList[]=paymentpage
+ModuleList[]=lissaferpay
 */ ?>
