@@ -23,14 +23,6 @@ $ViewList['returnfail'] = array (
 		'script' => 'returnfail.php'
 		 
 );
-/*
-
-$ViewList['overview'] = array(
-
-    'script' => 'overview.php',
-
-    'params' => array ( ) ); */
-
 
 
 ?>

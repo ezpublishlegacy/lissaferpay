@@ -18,11 +18,6 @@ $saferpay->logger->writeTimedString($request,"REQUEST");
 $_SESSION['lissaferpay']['MPI_SESSIONID'] = (string)$request['MPI_SESSIONID'];
 $_SESSION['lissaferpay']['MPI_LIABILITYSHIFT'] = (string)$request['MPI_LIABILITYSHIFT'];
 
-//var_dump($request);
-//var_dump(urldecode($_REQUEST['DATA']));
-//break;
-
 header('Location: /'.$siteaccess.'/shop/checkout');
-////header('Location: /toggenburg/shop/checkout');
 eZExecution::cleanExit();
 ?>
